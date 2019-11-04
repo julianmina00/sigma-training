@@ -1,13 +1,16 @@
 package com.sigma.training.listservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.ArrayList;
 import java.util.List;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ListDTO {
 
   private Long id;
   private String name;
   private String description;
-  private List<ItemDTO> items;
+  private List<ItemDTO> items = new ArrayList<>();
 
   public Long getId() {
     return id;
