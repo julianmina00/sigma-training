@@ -1,5 +1,8 @@
 package com.sigma.training.listservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ItemDTO {
 
   private Long id;

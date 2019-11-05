@@ -37,6 +37,9 @@ public class ListDTO {
   }
 
   public List<ItemDTO> getItems() {
+    if(items == null){
+      items = new ArrayList<>();
+    }
     return items;
   }
 

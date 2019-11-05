@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class ListServiceImpl implements ListService {
 
   private static long listId = 0;
+  private static long itemId = 0;
   private final Map<Long, ListDTO> listDTOMap = new ConcurrentHashMap<>();
 
   @Override
@@ -66,31 +67,61 @@ public class ListServiceImpl implements ListService {
 
   @Override
   public List<ItemDTO> getItems(long listId) {
-    return null;
+    ListDTO listDTO = listDTOMap.get(listId);
+    return listDTO == null ? null : listDTO.getItems();
   }
 
   @Override
   public ListDTO addItem(long listId, ItemDTO item) {
-    return null;
+    ListDTO list = listDTOMap.get(listId);
+    if(list != null){
+      item.setId(++itemId);
+      list.getItems().add(item);
+    }
+    return list;
   }
 
   @Override
   public ListDTO addItems(long listId, List<ItemDTO> items) {
-    return null;
+    ListDTO list = listDTOMap.get(listId);
+    if(list != null){
+      items.forEach(item -> {
+        item.setId(++itemId);
+        list.getItems().add(item);
+      });
+    }
+    return list;
   }
 
   @Override
   public ListDTO updateItem(long listId, long itemId, String name, String description) {
-    return null;
+    ListDTO list = listDTOMap.get(listId);
+    if(list != null){
+      list.getItems().stream()
+          .filter(item -> item.getId().equals(itemId))
+          .findFirst().ifPresent(itemDTO -> {
+            itemDTO.setName(name);
+            itemDTO.setDescription(description);
+          });
+    }
+    return list;
   }
 
   @Override
   public ListDTO removeItem(long listId, long itemId) {
-    return null;
+    ListDTO list = listDTOMap.get(listId);
+    if(list != null){
+      list.getItems().removeIf(item -> item.getId().equals(itemId));
+    }
+    return list;
   }
 
   @Override
   public ListDTO removeItems(long listId) {
-    return null;
+    ListDTO list = listDTOMap.get(listId);
+    if(list != null){
+      list.getItems().clear();
+    }
+    return list;
   }
 }
