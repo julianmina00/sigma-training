@@ -3,9 +3,10 @@ package com.sigma.training.listservice.api;
 import com.sigma.training.listservice.dto.ItemDTO;
 import com.sigma.training.listservice.dto.ListDTO;
 import com.sigma.training.listservice.service.ListService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ public class ListController {
 
   //(GET) /rest/list: Obtains all lists
   @GetMapping
+  @ApiOperation(value = "Obtain all created Lists", produces = "application/json", tags = "List Endpoint")
   public ResponseEntity<List<ListDTO>> getLists(){
     List<ListDTO> lists = listService.getLists();
     if(lists == null || lists.isEmpty()){
@@ -41,7 +43,10 @@ public class ListController {
 
   //(GET) /rest/list/{id}: Obtains the List for the given id
   @GetMapping("/{id}")
-  public ResponseEntity<ListDTO> getLists(@PathVariable("id") long id){
+  @ApiOperation(value = "Obtains the List for the given id", produces = "application/json", tags = "List Endpoint")
+  public ResponseEntity<ListDTO> getLists(
+      @ApiParam(value = "Identifier of the list to be recovered", required = true, type = "path") @PathVariable("id") long id
+  ){
     ListDTO list = listService.getList(id);
     if(list == null){
       return NOT_FOUND_LIST;
@@ -51,7 +56,10 @@ public class ListController {
 
   //(POST) /rest/list: Creates a new List with items
   @PostMapping
-  public ResponseEntity<ListDTO> createList(@RequestBody ListDTO listDTO){
+  @ApiOperation(value = "Creates a new List with items", produces = "application/json", tags = "List Endpoint")
+  public ResponseEntity<ListDTO> createList(
+      @ApiParam(value = "JSON that represents the List to be created", required = true, type = "body") @RequestBody ListDTO listDTO)
+  {
     ListDTO list = listService.createList(listDTO);
     if(list == null){
       return ResponseEntity.badRequest().build();
@@ -61,8 +69,10 @@ public class ListController {
 
   //(POST) /rest/list/{name}/{description}: Creates a new List without items
   @PostMapping("/{name}/{description}")
-  public ResponseEntity<ListDTO> createList(@PathVariable("name") String name,
-      @PathVariable("description") String description){
+  @ApiOperation(value = "Creates a new List without items", produces = "application/json", tags = "List Endpoint")
+  public ResponseEntity<ListDTO> createList(
+      @ApiParam(value = "Name of the List to be created", required = true, type = "path") @PathVariable("name") String name,
+      @ApiParam(value = "Description of the List to be created", required = true, type = "path") @PathVariable("description") String description){
     ListDTO list = listService.createList(name, description);
     if(list == null){
       return ResponseEntity.badRequest().build();
@@ -72,8 +82,9 @@ public class ListController {
 
   //(PUT) /rest/list/{id}/{name}/{description}: Updates the List for the given id
   @PutMapping("/{id}/{name}/{description}")
-  public ResponseEntity<ListDTO> createList(
-      @PathVariable("id") long id,
+  @ApiOperation(value = "Updates the List for the given id", produces = "application/json", tags = "List Endpoint")
+  public ResponseEntity<ListDTO> updateList(
+      @ApiParam(value = "Identifier of the list to be recovered", required = true, type = "path") @PathVariable("id") long id,
       @PathVariable("name") String name,
       @PathVariable("description") String description){
     ListDTO list = listService.updateList(id, name, description);
@@ -85,7 +96,10 @@ public class ListController {
 
   //(DELETE) /rest/list/{id}: Deletes the List for the given id with all its items
   @DeleteMapping("/{id}")
-  public ResponseEntity<ListDTO> removeList(@PathVariable("id") long id){
+  @ApiOperation(value = "Deletes the List for the given id with all its items", produces = "application/json", tags = "List Endpoint")
+  public ResponseEntity<ListDTO> removeList(
+      @ApiParam(value = "Identifier of the list to be recovered", required = true, type = "path") @PathVariable("id") long id)
+  {
     ListDTO list = listService.deleteList(id);
     if(list == null){
       return NOT_FOUND_LIST;
@@ -96,7 +110,10 @@ public class ListController {
 
   // (GET) /rest/list/{listId}/items: Obtains the items of a List
   @GetMapping("/{listId}/items")
-  public ResponseEntity<List<ItemDTO>> getItems(@PathVariable("listId") long listId){
+  @ApiOperation(value = "Obtains the items of a List", produces = "application/json", tags = "Item Endpoint")
+  public ResponseEntity<List<ItemDTO>> getItems(
+      @ApiParam(value = "Identifier of the list to be recovered", required = true, type = "path") @PathVariable("listId") long listId)
+  {
     List<ItemDTO> items = listService.getItems(listId);
     if(items == null){
       return NOT_FOUND_LIST_OF_ITEM;
@@ -106,7 +123,10 @@ public class ListController {
 
   // (POST) /rest/list/{listId}/item: Adds a new item to a List
   @PostMapping("/{listId}/item")
-  public ResponseEntity<ListDTO> createItems(@PathVariable("listId") long listId, @RequestBody ItemDTO item){
+  @ApiOperation(value = "Adds a new item to a List", produces = "application/json", tags = "Item Endpoint")
+  public ResponseEntity<ListDTO> createItems(
+      @ApiParam(value = "Identifier of the list to be recovered", required = true, type = "path") @PathVariable("listId") long listId,
+      @ApiParam(value = "JSON that represents the Item to be created", required = true, type = "body")@RequestBody ItemDTO item){
     ListDTO list = listService.addItem(listId, item);
     if(list == null){
       return NOT_FOUND_LIST;
@@ -116,7 +136,10 @@ public class ListController {
 
   // (POST) /rest/list/{listId}/items: Adds a set of items to a List
   @PostMapping("/{listId}/items")
-  public ResponseEntity<ListDTO> createItems(@PathVariable("listId") long listId, @RequestBody List<ItemDTO> items){
+  @ApiOperation(value = "Adds a set of items to a List", produces = "application/json", tags = "Item Endpoint")
+  public ResponseEntity<ListDTO> createItems(
+      @ApiParam(value = "Identifier of the list to be recovered", required = true, type = "path") @PathVariable("listId") long listId,
+      @ApiParam(value = "JSON that represents the collection of Items to be created", required = true, type = "body")@RequestBody List<ItemDTO> items){
     ListDTO list = listService.addItems(listId, items);
     if(list == null){
       return NOT_FOUND_LIST;
@@ -126,11 +149,12 @@ public class ListController {
 
   // (PUT) /rest/list/{listId}/item/{itemId}/{name}/{description}: Updates an Item of a List
   @PutMapping("/{listId}/item/{itemId}/{name}/{description}")
+  @ApiOperation(value = "Updates an Item of a List", produces = "application/json", tags = "Item Endpoint")
   public ResponseEntity<ListDTO> updateItem(
-      @PathVariable("listId") long listId,
-      @PathVariable("itemId") long itemId,
-      @PathVariable("name") String name,
-      @PathVariable("description") String decription){
+      @ApiParam(value = "Identifier of the list to be updated", required = true, type = "path") @PathVariable("listId") long listId,
+      @ApiParam(value = "Identifier of the item to be updated", required = true, type = "path") @PathVariable("itemId") long itemId,
+      @ApiParam(value = "Name of the item to be updated", required = true, type = "path") @PathVariable("name") String name,
+      @ApiParam(value = "Description of the item to be updated", required = true, type = "path") @PathVariable("description") String decription){
     ListDTO list = listService.updateItem(listId, itemId, name, decription);
     if(list == null){
       return NOT_FOUND_LIST;
@@ -140,9 +164,10 @@ public class ListController {
 
   // (DELETE) /rest/list/{listId}/item/{itemId}: Removes an Item of a List
   @DeleteMapping("/{listId}/item/{itemId}")
+  @ApiOperation(value = "Removes an Item of a List", produces = "application/json", tags = "Item Endpoint")
   public ResponseEntity<ListDTO> deleteItem(
-      @PathVariable("listId") long listId,
-      @PathVariable("itemId") long itemId){
+      @ApiParam(value = "Identifier of the list to be recovered", required = true, type = "path") @PathVariable("listId") long listId,
+      @ApiParam(value = "Identifier of the item to be recovered", required = true, type = "path") @PathVariable("itemId") long itemId){
     ListDTO list = listService.removeItem(listId, itemId);
     if(list == null){
       return NOT_FOUND_LIST;
@@ -153,7 +178,10 @@ public class ListController {
 
   // (DELETE) /rest/list/{listId}/items: Removes all items from a List
   @DeleteMapping("{listId}/items")
-  public ResponseEntity<ListDTO> deleteItems(@PathVariable("listId") long listId){
+  @ApiOperation(value = "Removes all items from a List", produces = "application/json", tags = "Item Endpoint")
+  public ResponseEntity<ListDTO> deleteItems(
+      @ApiParam(value = "Identifier of the list to be recovered", required = true, type = "path") @PathVariable("listId") long listId)
+  {
     ListDTO list = listService.removeItems(listId);
     if(list == null){
       return NOT_FOUND_LIST;
