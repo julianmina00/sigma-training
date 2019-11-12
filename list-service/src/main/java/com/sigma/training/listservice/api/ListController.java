@@ -1,7 +1,7 @@
 package com.sigma.training.listservice.api;
 
-import com.sigma.training.listservice.dto.ItemDTO;
-import com.sigma.training.listservice.dto.ListDTO;
+import com.sigma.training.listservice.model.dto.ItemDTO;
+import com.sigma.training.listservice.model.dto.ListDTO;
 import com.sigma.training.listservice.service.ListService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

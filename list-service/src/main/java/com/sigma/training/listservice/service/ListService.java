@@ -1,7 +1,7 @@
 package com.sigma.training.listservice.service;
 
-import com.sigma.training.listservice.dto.ItemDTO;
-import com.sigma.training.listservice.dto.ListDTO;
+import com.sigma.training.listservice.model.dto.ItemDTO;
+import com.sigma.training.listservice.model.dto.ListDTO;
 import java.util.List;
 
 public interface ListService {

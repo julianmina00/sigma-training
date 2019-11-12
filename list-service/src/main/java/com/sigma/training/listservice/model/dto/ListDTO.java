@@ -1,4 +1,4 @@
-package com.sigma.training.listservice.dto;
+package com.sigma.training.listservice.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;

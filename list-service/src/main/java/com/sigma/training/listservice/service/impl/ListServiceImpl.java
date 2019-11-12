@@ -1,10 +1,9 @@
 package com.sigma.training.listservice.service.impl;
 
-import com.sigma.training.listservice.dto.ItemDTO;
-import com.sigma.training.listservice.dto.ListDTO;
+import com.sigma.training.listservice.model.dto.ItemDTO;
+import com.sigma.training.listservice.model.dto.ListDTO;
 import com.sigma.training.listservice.service.ListService;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
