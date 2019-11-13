@@ -23,19 +23,19 @@ public class ListConverter implements Converter<ListEntity, ListDTO> {
   }
 
   @Override
-  public ListDTO convert(@NotNull ListEntity entity) {
+  public ListDTO toDto(@NotNull ListEntity entity) {
     ListDTO dto = new ListDTO();
     dto.setId(entity.getId());
     dto.setName(entity.getName());
     dto.setDescription(entity.getDescription());
 
     List<ItemEntity> items = itemRepository.findByListId(entity.getId());
-    dto.setItems(itemConverter.convertAll(items));
+    dto.setItems(itemConverter.toDtoList(items));
     return dto;
   }
 
   @Override
-  public ListEntity reverseConvert(@NotNull ListDTO dto) {
+  public ListEntity toEntity(@NotNull ListDTO dto) {
     ListEntity entity = new ListEntity();
     entity.setId(dto.getId());
     entity.setName(dto.getName());

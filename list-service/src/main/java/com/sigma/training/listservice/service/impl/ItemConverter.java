@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class ItemConverter implements Converter<ItemEntity, ItemDTO> {
 
   @Override
-  public ItemDTO convert(@NotNull ItemEntity entity) {
+  public ItemDTO toDto(@NotNull ItemEntity entity) {
     ItemDTO dto = new ItemDTO();
     dto.setId(entity.getId());
     dto.setName(entity.getName());
@@ -19,7 +19,7 @@ public class ItemConverter implements Converter<ItemEntity, ItemDTO> {
   }
 
   @Override
-  public ItemEntity reverseConvert(@NotNull ItemDTO dto) {
+  public ItemEntity toEntity(@NotNull ItemDTO dto) {
     ItemEntity entity = new ItemEntity();
     entity.setId(dto.getId());
     entity.setName(dto.getName());

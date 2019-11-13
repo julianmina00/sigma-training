@@ -35,9 +35,6 @@ public class ListController {
   @ApiOperation(value = "Obtain all created Lists", produces = "application/json", tags = "List Endpoint")
   public ResponseEntity<List<ListDTO>> getLists(){
     List<ListDTO> lists = listService.getLists();
-    if(lists == null || lists.isEmpty()){
-      return ResponseEntity.noContent().build();
-    }
     return ResponseEntity.ok(lists);
   }
 
@@ -48,9 +45,6 @@ public class ListController {
       @ApiParam(value = "Identifier of the List to be recovered", required = true, type = "path") @PathVariable("id") long id
   ){
     ListDTO list = listService.getList(id);
-    if(list == null){
-      return NOT_FOUND_LIST;
-    }
     return ResponseEntity.ok(list);
   }
 
@@ -61,9 +55,6 @@ public class ListController {
       @ApiParam(value = "JSON that represents the List to be created", required = true, type = "body") @RequestBody ListDTO listDTO)
   {
     ListDTO list = listService.createList(listDTO);
-    if(list == null){
-      return ResponseEntity.badRequest().build();
-    }
     return ResponseEntity.ok(list);
   }
 
@@ -74,9 +65,6 @@ public class ListController {
       @ApiParam(value = "Name of the List to be created", required = true, type = "path") @PathVariable("name") String name,
       @ApiParam(value = "Description of the List to be created", required = true, type = "path") @PathVariable("description") String description){
     ListDTO list = listService.createList(name, description);
-    if(list == null){
-      return ResponseEntity.badRequest().build();
-    }
     return ResponseEntity.ok(list);
   }
 
@@ -88,9 +76,6 @@ public class ListController {
       @ApiParam(value = "New name of the List", required = true, type = "path") @PathVariable("name") String name,
       @ApiParam(value = "New description of the List", required = true, type = "path") @PathVariable("description") String description){
     ListDTO list = listService.updateList(id, name, description);
-    if(list == null){
-      return NOT_FOUND_LIST;
-    }
     return ResponseEntity.ok(list);
   }
 
@@ -101,9 +86,6 @@ public class ListController {
       @ApiParam(value = "Identifier of the List to be removed", required = true, type = "path") @PathVariable("id") long id)
   {
     ListDTO list = listService.deleteList(id);
-    if(list == null){
-      return NOT_FOUND_LIST;
-    }
     return ResponseEntity.ok(list);
   }
 
@@ -115,9 +97,6 @@ public class ListController {
       @ApiParam(value = "Identifier of the List whose Items will be recovered", required = true, type = "path") @PathVariable("listId") long listId)
   {
     List<ItemDTO> items = listService.getItems(listId);
-    if(items == null){
-      return NOT_FOUND_LIST_OF_ITEM;
-    }
     return ResponseEntity.ok(items);
   }
 
@@ -128,9 +107,6 @@ public class ListController {
       @ApiParam(value = "Identifier of the List where the Item will be added", required = true, type = "path") @PathVariable("listId") long listId,
       @ApiParam(value = "JSON that represents the new Item", required = true, type = "body")@RequestBody ItemDTO item){
     ListDTO list = listService.addItem(listId, item);
-    if(list == null){
-      return NOT_FOUND_LIST;
-    }
     return ResponseEntity.ok(list);
   }
 
@@ -141,9 +117,6 @@ public class ListController {
       @ApiParam(value = "Identifier of the List where the Items will be added", required = true, type = "path") @PathVariable("listId") long listId,
       @ApiParam(value = "JSON that represents the collection of the new Items", required = true, type = "body")@RequestBody List<ItemDTO> items){
     ListDTO list = listService.addItems(listId, items);
-    if(list == null){
-      return NOT_FOUND_LIST;
-    }
     return ResponseEntity.ok(list);
   }
 
@@ -156,9 +129,6 @@ public class ListController {
       @ApiParam(value = "New name of the Item", required = true, type = "path") @PathVariable("name") String name,
       @ApiParam(value = "New description of the Item", required = true, type = "path") @PathVariable("description") String description){
     ListDTO list = listService.updateItem(listId, itemId, name, description);
-    if(list == null){
-      return NOT_FOUND_LIST;
-    }
     return ResponseEntity.ok(list);
   }
 
