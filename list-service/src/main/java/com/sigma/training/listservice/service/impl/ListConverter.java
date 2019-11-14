@@ -28,6 +28,8 @@ public class ListConverter implements Converter<ListEntity, ListDTO> {
     dto.setId(entity.getId());
     dto.setName(entity.getName());
     dto.setDescription(entity.getDescription());
+    dto.setCreatedAt(entity.getCreatedAt());
+    dto.setUpdatedAt(entity.getUpdatedAt());
 
     List<ItemEntity> items = itemRepository.findByListId(entity.getId());
     dto.setItems(itemConverter.toDtoList(items));

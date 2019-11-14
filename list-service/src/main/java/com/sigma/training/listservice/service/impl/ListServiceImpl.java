@@ -1,5 +1,7 @@
 package com.sigma.training.listservice.service.impl;
 
+import static java.text.MessageFormat.format;
+
 import com.sigma.training.listservice.exception.NotFoundException;
 import com.sigma.training.listservice.model.dto.ItemDTO;
 import com.sigma.training.listservice.model.dto.ListDTO;
@@ -8,6 +10,7 @@ import com.sigma.training.listservice.model.entity.ListEntity;
 import com.sigma.training.listservice.repository.ItemRepository;
 import com.sigma.training.listservice.repository.ListRepository;
 import com.sigma.training.listservice.service.ListService;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ListServiceImpl implements ListService {
 
+  private static final String NOT_POSSIBLE_TO_UPDATE_ITEM = "It was not possible to update the Item since there is not a List with Id: {0} or the Item Id: {1} doesn't exist";
+  private static final String NOT_POSSIBLE_TO_DELETE_ITEM = "It was not possible to delete the Item since there is not a List with Id: {0} or the Item Id: {1} doesn't exist";
   private final ItemRepository itemRepository;
   private final ListRepository listRepository;
   private final ListConverter listConverter;
@@ -45,9 +50,7 @@ public class ListServiceImpl implements ListService {
   public ListDTO createList(ListDTO list) {
     ListEntity createdList = listRepository.save(listConverter.toEntity(list));
     List<ItemEntity> itemEntities = itemConverter.toEntityList(list.getItems());
-    itemEntities.forEach(itemEntity -> {
-      itemEntity.setListId(createdList.getId());
-    });
+    itemEntities.forEach(itemEntity -> itemEntity.setListId(createdList.getId()));
     List<ItemEntity> createdItems = itemRepository.saveAll(itemEntities);
     ListDTO listDTO = listConverter.toDto(createdList);
     listDTO.setItems(itemConverter.toDtoList(createdItems));
@@ -78,6 +81,7 @@ public class ListServiceImpl implements ListService {
   public ListDTO deleteList(long id) {
     Optional<ListEntity> optional = listRepository.findById(id);
     return optional.map(entity -> {
+      removeItems(entity.getId());
       listRepository.delete(entity);
       return listConverter.toDto(entity);
     }).orElseThrow(() -> new NotFoundException("It was not possible to update since there is not a List with Id: "+id));
@@ -96,11 +100,7 @@ public class ListServiceImpl implements ListService {
       ItemEntity itemEntity = itemConverter.toEntity(item);
       itemEntity.setListId(listEntity.getId());
       itemRepository.save(itemEntity);
-
-      List<ItemEntity> newItems = itemRepository.findByListId(listId);
-      ListDTO listDTO = listConverter.toDto(listEntity);
-      listDTO.setItems(itemConverter.toDtoList(newItems));
-      return listDTO;
+      return listConverter.toDto(listEntity);
     }).orElseThrow(() -> new NotFoundException("It was not possible to add the Item since there is not a List with Id: "+listId));
   }
 
@@ -110,11 +110,8 @@ public class ListServiceImpl implements ListService {
     return optional.map(listEntity -> {
       List<ItemEntity> itemEntities = itemConverter.toEntityList(items);
       itemEntities.forEach(entity -> entity.setListId(listEntity.getId()));
-      List<ItemEntity> newItems = itemRepository.saveAll(itemEntities);
-
-      ListDTO dto = listConverter.toDto(listEntity);
-      dto.setItems(itemConverter.toDtoList(itemEntities));
-      return dto;
+      itemRepository.saveAll(itemEntities);
+      return listConverter.toDto(listEntity);
     }).orElseThrow(() -> new NotFoundException("It was not possible to add the Items since there is not a List with Id: "+listId));
   }
 
@@ -129,20 +126,36 @@ public class ListServiceImpl implements ListService {
 
       Optional<ListEntity> optionalList = listRepository.findById(listId);
       ListDTO dto = optionalList.map(listConverter::toDto).orElseThrow(() -> new NotFoundException(
-          "It was not possible to add the Items since there is not a List with Id: " + listId));
+          "It was not possible to update the Items since there is not a List with Id: " + listId));
       List<ItemEntity> itemEntities = itemRepository.findByListId(listId);
       dto.setItems(itemConverter.toDtoList(itemEntities));
       return dto;
-    }).orElseThrow(() -> new NotFoundException("It was not possible to update the Item since there is not a List with Id: "+listId+" or the Item Id: doesn't "+itemId+"exist"));
+    }).orElseThrow(() -> new NotFoundException(format(NOT_POSSIBLE_TO_UPDATE_ITEM, listId, itemId)));
   }
 
   @Override
   public ListDTO removeItem(long listId, long itemId) {
-    return null;
+    Optional<ItemEntity> optionalItem = itemRepository.findByListIdAndId(listId, itemId);
+    return optionalItem.map(entity -> {
+      itemRepository.deleteById(itemId);
+      Optional<ListEntity> optionalList = listRepository.findById(listId);
+      ListDTO dto = optionalList.map(listConverter::toDto).orElseThrow(() -> {
+        String message = format("It was not possible to remove the Items since there is not a List with Id: {0}", listId);
+        return new NotFoundException(message);
+      });
+      List<ItemEntity> itemEntities = itemRepository.findByListId(listId);
+      dto.setItems(itemConverter.toDtoList(itemEntities));
+      return dto;
+    }).orElseThrow(() -> new NotFoundException(format(NOT_POSSIBLE_TO_DELETE_ITEM, listId, itemId)));
   }
 
   @Override
   public ListDTO removeItems(long listId) {
-    return null;
+    Optional<ListEntity> optionalList = listRepository.findById(listId);
+    return optionalList.map(entity -> {
+      List<ItemEntity> items = itemRepository.findByListId(listId);
+      items.forEach(itemEntity -> itemRepository.deleteById(itemEntity.getId()));
+      return listConverter.toDto(entity);
+    }).orElseThrow(() -> new NotFoundException(format("It was impossible to remove the items due to List id: {0} does not exist", listId)));
   }
 }
