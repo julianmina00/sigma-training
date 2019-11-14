@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/rest/list")
 public class ListController {
 
-  private static final ResponseEntity<ListDTO> NOT_FOUND_LIST = ResponseEntity.notFound().build();
-  private static final ResponseEntity<List<ItemDTO>> NOT_FOUND_LIST_OF_ITEM = ResponseEntity.notFound().build();
   private final ListService listService;
 
   @Autowired
@@ -139,9 +137,6 @@ public class ListController {
       @ApiParam(value = "Identifier of the List whose Item will be removed", required = true, type = "path") @PathVariable("listId") long listId,
       @ApiParam(value = "Identifier of the item to be recovered", required = true, type = "path") @PathVariable("itemId") long itemId){
     ListDTO list = listService.removeItem(listId, itemId);
-    if(list == null){
-      return NOT_FOUND_LIST;
-    }
     return ResponseEntity.ok(list);
 
   }
@@ -153,9 +148,6 @@ public class ListController {
       @ApiParam(value = "Identifier of the List whose Items will be removed", required = true, type = "path") @PathVariable("listId") long listId)
   {
     ListDTO list = listService.removeItems(listId);
-    if(list == null){
-      return NOT_FOUND_LIST;
-    }
     return ResponseEntity.ok(list);
   }
 
