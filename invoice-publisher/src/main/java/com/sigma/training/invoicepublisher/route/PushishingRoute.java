@@ -1,5 +1,10 @@
 package com.sigma.training.invoicepublisher.route;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sigma.training.invoicepublisher.model.ErrorMessage;
+import java.io.IOException;
+import java.util.Map;
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.RouteDefinition;
 import org.apache.camel.model.rest.RestBindingMode;
@@ -73,6 +78,16 @@ public class PushishingRoute extends RouteBuilder {
   }
 
   private void addExceptionHandler(RouteDefinition routeDefinition) {
+    routeDefinition.onException(Exception.class)
+        .handled(true)
+        .process(exchange -> {
+          Exception exception = (Exception)exchange.getProperty(Exchange.EXCEPTION_CAUGHT);
+          String message = "Uppssss... there was an exception: " + exception.getLocalizedMessage();
+          ErrorMessage errorMessage = new ErrorMessage(message, exception.getClass().getName());
+          ObjectMapper mapper = new ObjectMapper();
+          exchange.getIn().setBody(mapper.writeValueAsString(errorMessage), String.class);
+          log.error(message, exception);
+        });
     log.error("Exception processing the message");
   }
 
