@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PushishingRoute extends RouteBuilder {
+public class PublishingRoute extends RouteBuilder {
 
   private final int port;
   private final String bootstrapServers;
@@ -24,7 +24,7 @@ public class PushishingRoute extends RouteBuilder {
   private final PublisherRouteProcessor publisherRouteProcessor;
 
   @Autowired
-  public PushishingRoute(@Value("${server.port}") int port,
+  public PublishingRoute(@Value("${server.port}") int port,
       @Value("${kafka.bootstrap.servers}") String bootstrapServers,
       @Value("${kafka.invoice.topic}") String invoiceTopicName,
       PublisherRouteProcessor publisherRouteProcessor) {
