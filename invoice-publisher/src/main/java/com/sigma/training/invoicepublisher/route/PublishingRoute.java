@@ -48,21 +48,25 @@ public class PublishingRoute extends RouteBuilder {
         .apiProperty("api.version","1.0.0")
         .apiProperty("cors","true");
     addInvoiceRoute();
+    addBulkInvoiceRoute();
+  }
+
+  private void addBulkInvoiceRoute() {
+    RestDefinition restDefinition = getRestDefinition("/invoice/bulk","Post a bunch of invoices");
+    RouteDefinition routeDefinition = restDefinition.route();
+    routeDefinition
+        .routeId("invoiceBulkPublisherRoute")
+        .split(body().tokenize("\n")).streaming()
+        .log("Prepering invoice to be posted to Kafka")
+        .process(publisherRouteProcessor)
+        .to(getKakfaConfiguration())
+        .log("The invoice was successfully sent to Kafka");
+    addExceptionHandler(routeDefinition);
+
   }
 
   private void addInvoiceRoute(){
-    RestDefinition restDefinition = rest("/api")
-        .post("/invoice")
-        .consumes("text/plain")
-        .produces("application/json")
-        .bindingMode(RestBindingMode.off)
-        .description("Post a single invoice")
-        .outType(String.class);
-
-    restDefinition.param()
-        .name("body").type(RestParamType.body).description("Body of the endpoint").example("5741018630493083527:11.64:Shampoo,Orange juice,Shaving cream")
-        .dataType("string").required(true).endParam();
-
+    RestDefinition restDefinition = getRestDefinition("/invoice","Post a single invoice");
     RouteDefinition routeDefinition = restDefinition.route();
     routeDefinition
         .routeId("invoicePublisherRoute")
@@ -71,6 +75,21 @@ public class PublishingRoute extends RouteBuilder {
         .to(getKakfaConfiguration())
         .log("The invoice was successfully sent to Kafka");
     addExceptionHandler(routeDefinition);
+  }
+
+  private RestDefinition getRestDefinition(String endpoint, String description) {
+    RestDefinition restDefinition = rest("/api")
+        .post(endpoint)
+        .consumes("text/plain")
+        .produces("application/json")
+        .bindingMode(RestBindingMode.off)
+        .description(description)
+        .outType(String.class);
+
+    restDefinition.param()
+        .name("body").type(RestParamType.body).description("Body of the endpoint")
+        .dataType("string").required(true).endParam();
+    return restDefinition;
   }
 
   private String getKakfaConfiguration() {
